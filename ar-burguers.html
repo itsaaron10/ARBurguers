@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AR BURGUERS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #D72638;
+      --yellow: #F4C430;
+      /* theme tokens (dark default) */
+      --bg:       #0a0a0a;
+      --bg2:      #111111;
+      --bg3:      #222222;
+      --text:     #F5F0E8;
+      --text-dim: rgba(245,240,232,0.55);
+      --nav-bg:   rgba(10,10,10,0.85);
+      --border:   rgba(212,38,56,0.25);
+      --card-bg:  #111111;
+    }
+
+    /* ── LIGHT THEME ── */
+    body.light {
+      --bg:       #F0EBE1;
+      --bg2:      #E4DDD0;
+      --bg3:      #D8D0C2;
+      --text:     #1A1008;
+      --text-dim: rgba(26,16,8,0.5);
+      --nav-bg:   rgba(240,235,225,0.92);
+      --border:   rgba(215,38,56,0.25);
+      --card-bg:  #EAE4D8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s, border-color 0.4s;
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 4px;
+      color: var(--yellow);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--red); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 36px;
+      align-items: center;
+    }
+    nav ul a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      transition: opacity .2s, color .2s;
+    }
+    nav ul a:hover { opacity: 1; color: var(--yellow); }
+
+    /* ── THEME TOGGLE ── */
+    #theme-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--card-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+      flex-shrink: 0;
+    }
+    #theme-toggle:hover {
+      border-color: var(--yellow);
+      transform: rotate(20deg) scale(1.1);
+    }
+    #theme-toggle .icon-sun  { display: none; }
+    #theme-toggle .icon-moon { display: block; }
+    body.light #theme-toggle .icon-sun  { display: block; }
+    body.light #theme-toggle .icon-moon { display: none; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.7) 100%),
+        url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1600&auto=format&fit=crop') center/cover no-repeat;
+      transform: scale(1.05);
+      animation: zoomBg 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes zoomBg {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.12); }
+    }
+
+    .hero-badge {
+      position: relative;
+      background: var(--red);
+      color: var(--white);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      margin-bottom: 24px;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-title {
+      position: relative;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 14vw, 11rem);
+      line-height: 0.9;
+      letter-spacing: 6px;
+      color: var(--white);
+      animation: fadeUp 0.8s ease 0.15s both;
+    }
+    .hero-title span { color: var(--yellow); }
+
+    .hero-sub {
+      position: relative;
+      margin-top: 20px;
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.7);
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .hero-cta {
+      position: relative;
+      margin-top: 44px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.8s ease 0.45s both;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 36px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-3px); }
+
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      box-shadow: 0 6px 30px rgba(215,38,56,0.5);
+    }
+    .btn-primary:hover { box-shadow: 0 10px 40px rgba(215,38,56,0.7); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(245,240,232,0.5);
+    }
+    .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.5;
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      animation: bounce 2s infinite;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: var(--white);
+    }
+
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS COMMON ── */
+    section {
+      padding: 100px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 2px solid var(--red);
+      width: 60px;
+      margin-bottom: 40px;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      background: var(--bg);
+      transition: background 0.4s;
+    }
+
+    .about-img {
+      position: relative;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .about-img img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.85);
+    }
+    .about-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 3px solid var(--red);
+      transform: translate(12px, 12px);
+      pointer-events: none;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .hours-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 32px;
+      margin-top: 36px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+    }
+    .hour-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .hour-day {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+    .hour-time {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text);
+    }
+
+    /* ── MENU ── */
+    #menu-section {
+      background:
+        linear-gradient(var(--menu-bg, rgba(10,10,10,0.93)), var(--menu-bg, rgba(10,10,10,0.93))),
+        url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&auto=format&fit=crop') center/cover fixed;
+      max-width: 100%;
+      padding: 100px 48px;
+      transition: background 0.4s;
+    }
+
+    body.light #menu-section {
+      background:
+        linear-gradient(rgba(240,235,225,0.95), rgba(240,235,225,0.95)),
+        url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&auto=format&fit=crop') center/cover fixed;
+    }
+    .menu-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      margin-top: 60px;
+    }
+
+    .menu-card {
+      background: var(--card-bg);
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      transition: transform .35s, box-shadow .35s, background 0.4s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    }
+    .menu-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    }
+
+    .card-img {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+    }
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .5s ease;
+      filter: brightness(0.88) saturate(1.1);
+    }
+    .menu-card:hover .card-img img { transform: scale(1.06); }
+    .card-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(17,17,17,0.85) 100%);
+      pointer-events: none;
+    }
+
+    .card-number {
+      position: absolute;
+      top: 14px; left: 16px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: var(--white);
+      background: var(--red);
+      padding: 4px 12px;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      z-index: 2;
+    }
+
+    .card-body {
+      padding: 24px 28px 28px;
+      position: relative;
+    }
+    .card-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 28px;
+      width: 40px;
+      height: 3px;
+      background: var(--red);
+    }
+
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 2px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--yellow);
+      letter-spacing: 2px;
+    }
+
+    .card-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+    }
+
+    /* ── WHATSAPP CTA ── */
+    #cta {
+      text-align: center;
+      padding: 120px 48px;
+      max-width: 100%;
+      background:
+        linear-gradient(135deg, rgba(215,38,56,0.1) 0%, transparent 60%),
+        var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s;
+    }
+    .cta-inner { max-width: 700px; margin: 0 auto; }
+
+    .cta-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
+    }
+
+    .cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .cta-sub {
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 44px;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: #fff;
+      padding: 18px 52px;
+      font-size: 0.9rem;
+      letter-spacing: 4px;
+      box-shadow: 0 8px 40px rgba(37,211,102,0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-whatsapp:hover {
+      box-shadow: 0 12px 50px rgba(37,211,102,0.6);
+      transform: translateY(-4px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg3);
+      text-align: center;
+      padding: 48px;
+      transition: background 0.4s;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 6px;
+      color: var(--yellow);
+      margin-bottom: 8px;
+    }
+    .footer-logo span { color: var(--red); }
+
+    footer p {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── UBICACIÓN ── */
+    #ubicacion {
+      max-width: 100%;
+      padding: 100px 48px;
+      background: var(--bg2);
+      transition: background 0.4s;
+    }
+    .ubicacion-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .ubicacion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 50px;
+    }
+    .ubicacion-info {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .ubicacion-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+    }
+    .ubicacion-icon {
+      width: 46px;
+      height: 46px;
+      background: var(--red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .ubicacion-item-text strong {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+    .ubicacion-item-text span {
+      font-size: 0.97rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .map-wrapper {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+    .map-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 3px solid var(--red);
+      transform: translate(-10px, 10px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .map-wrapper iframe {
+      width: 100%;
+      height: 360px;
+      border: none;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      nav ul { display: none; }
+      section { padding: 70px 24px; }
+      #about { grid-template-columns: 1fr; gap: 40px; }
+      .about-img img { height: 300px; }
+      #menu-section { padding: 70px 24px; }
+      #cta { padding: 80px 24px; }
+      #ubicacion { padding: 70px 24px; }
+      .ubicacion-grid { grid-template-columns: 1fr; gap: 36px; }
+      footer { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">AR<span> BURGUERS</span></a>
+    <ul>
+      <li><a href="#about">Nosotros</a></li>
+      <li><a href="#menu-section">Menú</a></li>
+      <li><a href="#ubicacion">Ubicación</a></li>
+      <li><a href="#cta">Contacto</a></li>
+      <li>
+        <button id="theme-toggle" aria-label="Cambiar tema">
+          <span class="icon-moon">🌙</span>
+          <span class="icon-sun">☀️</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div id="hero">
+    <div class="hero-badge">Desde 2018 · Sabor Real</div>
+    <h1 class="hero-title">AR<br/><span>BURGUERS</span></h1>
+    <p class="hero-sub">Hamburguesas artesanales con carácter</p>
+    <div class="hero-cta">
+      <a href="#menu-section" class="btn btn-primary">Ver Menú</a>
+      <a href="#about" class="btn btn-outline">Nuestra Historia</a>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-img">
+      <img
+        src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop"
+        alt="Hamburguesa artesanal AR Burguers"
+      />
+    </div>
+    <div class="about-text">
+      <p class="section-label">Nuestra Historia</p>
+      <h2 class="section-title">Hechas con<br/>pasión y<br/>fuego real.</h2>
+      <hr class="divider"/>
+      <p>
+        AR Burguers nació de una idea de un estudiante de la FIME mientras cursaba su carrera, en una mañana recorria por su mente: hacer la hamburguesa perfecta. Nada de atajos,
+        nada de congelados. Carne fresca molida a diario, panes artesanales horneados cada mañana
+        y salsas que han pasado por cientos de pruebas antes de llegar a tu mesa.
+      </p>
+      <p>
+        Desde nuestro pequeño local en el barrio, hemos crecido gracias a cada cliente que
+        volvió por una segunda, tercera o décima vez. Eso lo dice todo.
+      </p>
+      <div class="hours-grid">
+        <div class="hour-item">
+          <span class="hour-day">Lunes – Viernes</span>
+          <span class="hour-time">1:00 PM – 11:00 PM</span>
+        </div>
+        <div class="hour-item">
+          <span class="hour-day">Sábado</span>
+          <span class="hour-time">12:00 PM – 12:00 AM</span>
+        </div>
+        <div class="hour-item">
+          <span class="hour-day">Domingo</span>
+          <span class="hour-time">12:00 PM – 10:00 PM</span>
+        </div>
+        <div class="hour-item">
+          <span class="hour-day">Días Festivos</span>
+          <span class="hour-time">1:00 PM – 10:00 PM</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <div id="menu-section">
+    <div class="menu-inner">
+      <p class="section-label">Lo que hacemos bien</p>
+      <h2 class="section-title">Nuestro Menú</h2>
+      <hr class="divider"/>
+      <div class="menu-grid">
+
+        <!-- 01 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">01</span>
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&auto=format&fit=crop" alt="La Clásica AR"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">La Clásica AR</div>
+            <p class="card-desc">180g de carne Angus, queso americano, lechuga, tomate, pepinillo y nuestra salsa AR especial en pan brioche tostado.</p>
+            <div class="card-footer">
+              <div class="card-price">$120</div>
+              <span class="card-tag">Estrella</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">02</span>
+            <img src="https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=700&auto=format&fit=crop" alt="La Doble Queso"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">La Doble Queso</div>
+            <p class="card-desc">Dos medallones de 120g, triple queso cheddar fundido, cebolla caramelizada y mostaza artesanal. Para los valientes.</p>
+            <div class="card-footer">
+              <div class="card-price">$155</div>
+              <span class="card-tag">Popular</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">03</span>
+            <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=700&auto=format&fit=crop" alt="La Infernal"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">La Infernal</div>
+            <p class="card-desc">Carne jugosa, jalapeños frescos, salsa habanera casera, queso pepper jack y aros de cebolla crujientes. Pica de verdad.</p>
+            <div class="card-footer">
+              <div class="card-price">$145</div>
+              <span class="card-tag">Picante 🌶️</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">04</span>
+            <img src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=700&auto=format&fit=crop" alt="La Forestale"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">La Forestale</div>
+            <p class="card-desc">Hamburguesa de portobello asado, queso suizo, espinacas salteadas, mayonesa de ajo negro y pan de semillas. Irresistible.</p>
+            <div class="card-footer">
+              <div class="card-price">$130</div>
+              <span class="card-tag">Veggie</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">05</span>
+            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=700&auto=format&fit=crop" alt="La BBQ Boss"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">La BBQ Boss</div>
+            <p class="card-desc">Carne Angus, tres tiras de tocino ahumado, salsa BBQ artesanal, aros de cebolla y queso gouda ahumado. Un clásico reinventado.</p>
+            <div class="card-footer">
+              <div class="card-price">$160</div>
+              <span class="card-tag">Firma</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 -->
+        <div class="menu-card">
+          <div class="card-img">
+            <span class="card-number">06</span>
+            <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=700&auto=format&fit=crop" alt="Combos y Extras"/>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Combos &amp; Extras</div>
+            <p class="card-desc">Agrega papas fritas corte artesanal, aros de cebolla, malteada de vainilla/fresa/chocolate o refresco a cualquier orden.</p>
+            <div class="card-footer">
+              <div class="card-price">desde $35</div>
+              <span class="card-tag">Extras</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP CTA -->
+  <div id="cta">
+    <div class="cta-inner">
+      <span class="cta-icon">📲</span>
+      <h2 class="cta-title">¿Listo para<br/>ordenar?</h2>
+      <p class="cta-sub">
+        Haz tu pedido directo por WhatsApp. Te respondemos al instante,<br/>
+        sin apps, sin cuentas, sin complicaciones.
+      </p>
+      <a
+        href="https://wa.me/8111661910"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-whatsapp"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.117 1.528 5.845L0 24l6.335-1.652A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.943 0-3.77-.524-5.337-1.438l-.38-.226-3.961 1.033 1.056-3.85-.248-.396A9.934 9.934 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+        </svg>
+        Pedir por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- UBICACIÓN -->
+  <div id="ubicacion">
+    <div class="ubicacion-inner">
+      <p class="section-label">¿Dónde estamos?</p>
+      <h2 class="section-title">Nuestra Ubicación</h2>
+      <hr class="divider"/>
+      <div class="ubicacion-grid">
+        <div class="ubicacion-info">
+          <div class="ubicacion-item">
+            <div class="ubicacion-icon">📍</div>
+            <div class="ubicacion-item-text">
+              <strong>Dirección</strong>
+              <span>C. Diego de Montemayor 805,<br/>Barrio Antiguo, Centro,<br/>64000 Monterrey, N.L.</span>
+            </div>
+          </div>
+          <div class="ubicacion-item">
+            <div class="ubicacion-icon">🕐</div>
+            <div class="ubicacion-item-text">
+              <strong>Horario</strong>
+              <span>Lun–Vie: 1:00 PM – 11:00 PM<br/>Sáb: 12:00 PM – 12:00 AM<br/>Dom: 12:00 PM – 10:00 PM</span>
+            </div>
+          </div>
+          <div class="ubicacion-item">
+            <div class="ubicacion-icon">📞</div>
+            <div class="ubicacion-item-text">
+              <strong>Teléfono / WhatsApp</strong>
+              <span>81 1166 1910</span>
+            </div>
+          </div>
+          <a
+            href="https://www.google.com/maps/dir/?api=1&destination=C.+Diego+de+Montemayor+805,+Barrio+Antiguo,+64000+Monterrey,+N.L."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+            style="margin-top:8px; display:inline-block; text-align:center;"
+          >
+            Cómo llegar →
+          </a>
+        </div>
+        <div class="map-wrapper">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1511.981017256097!2d-100.30916454130563!3d25.667410453275828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662bf00323cebe5%3A0xa08e44b49dc2129!2sBarrio%20Burger!5e0!3m2!1ses-419!2smx!4v1776405470553!5m2!1ses-419!2smx"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación AR Burguers"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">AR<span> BURGUERS</span></div>
+    <p style="margin-bottom:8px;">C. Diego de Montemayor 805, Barrio Antiguo, Centro, 64000 Monterrey, N.L.</p>
+    <p>© 2026 AR Burguers · Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('theme-toggle');
+    // Load saved preference
+    if (localStorage.getItem('arb-theme') === 'light') {
+      document.body.classList.add('light');
+    }
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('arb-theme',
+        document.body.classList.contains('light') ? 'light' : 'dark'
+      );
+    });
+  </script>
+</body>
+</html>
